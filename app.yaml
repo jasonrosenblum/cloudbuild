@@ -1,0 +1,42 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "quickstart-docker"
+  namespace: "default"
+  labels:
+    app: "quickstart-docker"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "quickstart-docker"
+  template:
+    metadata:
+      labels:
+        app: "quickstart-docker"
+    spec:
+      containers:
+      - name: "cloudbuild-1"
+        image: "gcr.io/jasons-project-272919/github.com/jasonrosenblum/cloudbuild"
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "quickstart-docker-hpa-dqnh"
+  namespace: "default"
+  labels:
+    app: "quickstart-docker"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "quickstart-docker"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80
+
